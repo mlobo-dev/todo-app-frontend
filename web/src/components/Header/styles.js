@@ -29,7 +29,7 @@ export const RightSide = styled.div`
     align-items:center;
     justify-content: flex-end;
 
-    a{
+    a, button{
         color:#FFF;
         font-weight:bold;
         text-decoration:none;
@@ -38,6 +38,12 @@ export const RightSide = styled.div`
         &:hover{
             color:#EE6B26;
         }
+    }
+
+
+    button{
+       background:none;
+       border:none; 
     }
 
     #notification{

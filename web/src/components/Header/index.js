@@ -2,7 +2,7 @@ import React from 'react'
 import * as S from './styles';
 import logo from '../../assets/logo.png'
 import bell from '../../assets/bell.png'
-function Header() {
+function Header({lateCount, clickNotification}) {
     return (
       <S.Container>
         <S.LeftSide>
@@ -21,10 +21,10 @@ function Header() {
 
           <span className="dividir"/>
           
-          <a href="localhost:3000" id="notification">
+          <button  id="notification" onClick={clickNotification}>
             <img src={bell} alt="Notificação"/>
-            <span>5</span>
-          </a>
+            <span>{lateCount}</span>
+          </button>
          
         </S.RightSide>
       </S.Container>
