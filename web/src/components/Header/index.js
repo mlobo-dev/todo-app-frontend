@@ -2,6 +2,7 @@ import React from 'react'
 import * as S from './styles';
 import logo from '../../assets/logo.png'
 import bell from '../../assets/bell.png'
+import {Link} from 'react-router-dom'
 function Header({lateCount, clickNotification}) {
     return (
       <S.Container>
@@ -9,11 +10,12 @@ function Header({lateCount, clickNotification}) {
           <img src={logo} alt="Logo"/>
         </S.LeftSide>
         <S.RightSide>
-          <a href="localhost:3000"> INÍCIO</a>
+
+          <Link to="/"> INÍCIO</Link>
 
           <span className="dividir"/>
 
-          <a href="localhost:3000"> NOVA TAREFA</a>
+          <Link to="/tasks">NOVA TAREFA</Link>
 
           <span className="dividir"/>
 
