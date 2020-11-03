@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Footer from '../../components/Footer';
+import {format} from 'date-fns'
 
 //NOSSOS COMPONENTES
 import Header from '../../components/Header';
@@ -10,7 +11,7 @@ import iconCalendar from '../../assets/calendar.png';
 import iconClock from '../../assets/clock.png';
 
 
-function Tasks() {
+function Tasks({match}) {
 
   const [lateCount, setLateCount] = useState();
   const [type, setType] = useState();
@@ -31,6 +32,17 @@ function Tasks() {
     }) 
   }
 
+  async function loadTaskDetails(){
+    await api.get(`/task/${match.params.id}`)
+    .then(response =>{
+      setType(response.data.type)
+      setTitle(response.data.title)
+      setDescription(response.data.description)
+      setDate(format(new Date(response.data.when),'yyyy-MM-dd'))
+      setHour(format(new Date(response.data.when),'HH:mm'))
+    })
+  }
+
   async function save(){
       await api.post('/task',{
         macaddress,
@@ -46,6 +58,7 @@ function Tasks() {
 
   useEffect(()=>{
     lateVerify();
+    loadTaskDetails();
   },[])
   
   return (
