@@ -38,7 +38,7 @@ function Home() {
 
   return (
     <S.Container>
-      <Header lateCount={lateCount} clickNotification={notification} />
+      <Header clickNotification={notification} />
       <S.FilterArea>
         <button type="button" onClick={() => setFilterActived("all")}>
           <FilterCard title="Todos" actived={filterActived === "all"} />
