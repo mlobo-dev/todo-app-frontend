@@ -4,13 +4,20 @@ import logo from "../../assets/logo.png";
 import bell from "../../assets/bell.png";
 import { Link } from "react-router-dom";
 import api from "../../services/api";
+import isConnected from "../../utils/isConnected";
+
 function Header({ clickNotification }) {
   const [lateCount, setLateCount] = useState();
 
   async function lateVerify() {
-    await api.get(`/task/filter/late/11:11:11:11:11:11`).then((response) => {
+    await api.get(`/task/filter/late/${isConnected}`).then((response) => {
       setLateCount(response.data.length);
     });
+  }
+
+  function logout() {
+    localStorage.removeItem("@todo/macaddress");
+    window.location.reload();
   }
 
   useEffect(() => {
@@ -32,9 +39,15 @@ function Header({ clickNotification }) {
 
         <span className="dividir" />
 
-        <Link to="/qrcode">SINCRONIZAR CELULAR</Link>
+        {!isConnected ? (
+          <Link to="/qrcode">SINCRONIZAR CELULAR</Link>
+        ) : (
+          <button type="button" onClick={logout}>
+            SAIR
+          </button>
+        )}
 
-        {lateCount && (
+        {lateCount && isConnected && (
           <>
             <span className="dividir" />
             <button id="notification" onClick={clickNotification}>

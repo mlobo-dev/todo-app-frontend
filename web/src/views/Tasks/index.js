@@ -12,6 +12,7 @@ import * as S from "./styles";
 import typeIcons from "../../utils/typeicons";
 import iconCalendar from "../../assets/calendar.png";
 import iconClock from "../../assets/clock.png";
+import isConnected from "../../utils/isConnected";
 
 function Tasks({ match }) {
   const [id, setId] = useState();
@@ -22,7 +23,6 @@ function Tasks({ match }) {
   const [description, setDescription] = useState();
   const [date, setDate] = useState();
   const [hour, setHour] = useState();
-  const [macaddress, setMacAddress] = useState("11:11:11:11:11:11");
 
   async function loadTaskDetails() {
     await api.get(`/task/${match.params.id}`).then((response) => {
@@ -74,7 +74,7 @@ function Tasks({ match }) {
     if (match.params.id) {
       await api
         .put(`/task/${match.params.id}`, {
-          macaddress,
+          macaddress: isConnected,
           type,
           title,
           description,
@@ -88,7 +88,7 @@ function Tasks({ match }) {
     } else {
       await api
         .post("/task", {
-          macaddress,
+          macaddress: isConnected,
           type,
           title,
           description,
@@ -117,6 +117,9 @@ function Tasks({ match }) {
 
   useEffect(() => {
     loadTaskDetails();
+    if (!isConnected) {
+      setRedirect(true);
+    }
   }, []);
 
   return (
