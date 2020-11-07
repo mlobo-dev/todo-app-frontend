@@ -20,8 +20,7 @@ function Header({ lateCount, clickNotification }) {
 
         <span className="dividir" />
 
-        <a href="localhost:3000"> SINCRONIZAR CELULAR</a>
-
+        <Link to="/qrcode">SINCRONIZAR CELULAR</Link>
         <span className="dividir" />
 
         <button id="notification" onClick={clickNotification}>
