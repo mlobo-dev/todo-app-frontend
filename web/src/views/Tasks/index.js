@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Footer from "../../components/Footer";
 import { format } from "date-fns";
 import { Redirect } from "react-router-dom";
+import { mensagemErro, mensagemSucesso } from "../../components/Toastr/toastr";
+import ErroValidacao from "../../exceptions/ErroValidacao";
 
 //NOSSOS COMPONENTES
 import Header from "../../components/Header";
@@ -12,10 +14,10 @@ import iconCalendar from "../../assets/calendar.png";
 import iconClock from "../../assets/clock.png";
 
 function Tasks({ match }) {
+  const [id, setId] = useState();
   const [redirect, setRedirect] = useState();
   const [lateCount, setLateCount] = useState();
   const [type, setType] = useState();
-  const [id, setId] = useState();
   const [done, setDone] = useState(false);
   const [title, setTitle] = useState();
   const [description, setDescription] = useState();
@@ -32,14 +34,50 @@ function Tasks({ match }) {
   async function loadTaskDetails() {
     await api.get(`/task/${match.params.id}`).then((response) => {
       setType(response.data.type);
+      setId(response.data._id);
       setTitle(response.data.title);
+      setDone(response.data.done);
       setDescription(response.data.description);
       setDate(format(new Date(response.data.when), "yyyy-MM-dd"));
       setHour(format(new Date(response.data.when), "HH:mm"));
     });
   }
 
+  function taskValidation(title, description, date, hour) {
+    const erros = [];
+
+    if (!title) {
+      erros.push("O campo Título é obrigatório");
+    }
+
+    if (!hour) {
+      erros.push("O campo Hora é obrigatório");
+    }
+
+    if (!date) {
+      erros.push("O campo Data é obrigatório");
+    }
+
+    if (!description) {
+      erros.push("O campo Descrição é obrigatório");
+    }
+
+    if (erros && erros.length > 0) {
+      throw new ErroValidacao(erros);
+    }
+  }
+
   async function save() {
+    try {
+      taskValidation(title, description, date, hour);
+    } catch (error) {
+      const msgs = error.mensagens;
+      msgs.forEach((msg) => {
+        mensagemErro(msg);
+      });
+      return false;
+    }
+
     if (match.params.id) {
       await api
         .put(`/task/${match.params.id}`, {
@@ -48,8 +86,12 @@ function Tasks({ match }) {
           title,
           description,
           when: `${date}T${hour}:00.000Z`,
+          done,
         })
-        .then(() => setRedirect(true));
+        .then(() => {
+          setRedirect(true);
+          mensagemSucesso("Tarefa editada Com Sucesso!");
+        });
     } else {
       await api
         .post("/task", {
@@ -58,8 +100,25 @@ function Tasks({ match }) {
           title,
           description,
           when: `${date}T${hour}:00.000Z`,
+          done,
         })
-        .then(() => setRedirect(true));
+        .then(() => {
+          setRedirect(true);
+          mensagemSucesso("Tarefa salva Com Sucesso!");
+        })
+        .catch((e) => {
+          debugger;
+          mensagemErro(e.response.data.error);
+        });
+    }
+  }
+
+  async function remove() {
+    const res = window.confirm("Deseja realmente remover a tarefa");
+    if (res === true) {
+      await api.delete(`/task/${id}`);
+      setRedirect(true);
+      mensagemSucesso("Deletado com sucesso!");
     }
   }
 
@@ -139,7 +198,9 @@ function Tasks({ match }) {
             />
             <span>CONCLUÍDO</span>
           </div>
-          <button>EXCLUIR</button>
+          <button type="button" onClick={remove}>
+            EXCLUIR
+          </button>
         </S.Options>
 
         <S.Save>
