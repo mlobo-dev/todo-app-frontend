@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FilterCard from '../../components/FilterCard';
+import {Link} from 'react-router-dom'
 import Footer from '../../components/Footer';
 //NOSSOS COMPONENTES
 import Header from '../../components/Header';
@@ -73,7 +74,10 @@ function Home() {
         <S.Content>
            {
              tasks.map(task => (
-              <TaskCard type={task.type} title={task.title} when={task.when}/>
+              
+               <Link to={`/tasks/${task._id}`}>
+                 <TaskCard type={task.type} title={task.title} when={task.when}/>
+               </Link>
              ))
            }
         </S.Content>
